@@ -15,12 +15,11 @@ type Route struct {
 func RegisteredRoutes() []Route {
 	routes := []Route{
 		{Path: "/route1", Handle: func(w http.ResponseWriter, req *http.Request) {
-			fmt.Fprintf(w, "Route 1")
+			fmt.Fprintf(w, "Routedddd 1")
 		}},
 		{Path: "/route2", Handle: func(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(w, "Route 2")
 		}},
-		// Add more routes as needed
 	}
 
 	return routes

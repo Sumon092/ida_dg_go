@@ -28,14 +28,24 @@ func main() {
 	connStr := os.Getenv("DATABASE_URL")
 	database.InitDb(connStr)
 	fmt.Println("Database connected")
-	routeDefinitions := routes.RegisteredRoutes()
 
+	port := os.Getenv("PORT")
+	addr := fmt.Sprintf(":%s", port)
+	server := &http.Server{
+		Addr: addr,
+	}
+	routeDefinitions := routes.RegisteredRoutes()
 	for _, route := range routeDefinitions {
 		http.HandleFunc(route.Path, route.Handle)
 	}
-
 	gin.SetMode(gin.ReleaseMode)
-	RegisterRoutes()
+
+	go func() {
+		fmt.Printf("Server is running on port %s\n", port)
+		if err := server.ListenAndServe(); err != nil {
+			log.Fatalf("Server error: %v", err)
+		}
+	}()
 
 	select {}
 }
