@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"database/sql"
 	"fmt"
+	"ida_diag/src/module/user"
 	"net/http"
 )
 
@@ -12,15 +14,14 @@ type Route struct {
 }
 
 // RegisterRoutes registers routes from a slice of Route.
-func RegisteredRoutes() []Route {
+func RegisteredRoutes(db *sql.DB) []Route {
 	routes := []Route{
-		{Path: "/route1", Handle: func(w http.ResponseWriter, req *http.Request) {
-			fmt.Fprintf(w, "Woow I am flying with gin server")
-		}},
 		{Path: "/route2", Handle: func(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(w, "Route is heated")
 		}},
 	}
+	userRoutesHandler := user.UserRoutes(db)
+	routes = append(routes, Route{Path: "/users", Handle: userRoutesHandler.ServeHTTP})
 
 	return routes
 }

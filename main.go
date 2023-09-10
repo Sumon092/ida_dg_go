@@ -26,7 +26,7 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 	connStr := os.Getenv("DATABASE_URL")
-	database.InitDb(connStr)
+	db := database.InitDb(connStr)
 	fmt.Println("Database connected")
 
 	port := os.Getenv("PORT")
@@ -34,7 +34,7 @@ func main() {
 	server := &http.Server{
 		Addr: addr,
 	}
-	routeDefinitions := routes.RegisteredRoutes()
+	routeDefinitions := routes.RegisteredRoutes(db)
 	for _, route := range routeDefinitions {
 		http.HandleFunc(route.Path, route.Handle)
 	}
