@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"ida_diag/src/database"
+	"ida_diag/src/module/routes"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,9 +28,14 @@ func main() {
 	connStr := os.Getenv("DATABASE_URL")
 	database.InitDb(connStr)
 	fmt.Println("Database connected")
+	routeDefinitions := routes.RegisteredRoutes()
+
+	for _, route := range routeDefinitions {
+		http.HandleFunc(route.Path, route.Handle)
+	}
 
 	gin.SetMode(gin.ReleaseMode)
 	RegisterRoutes()
-	Chain()
+
 	select {}
 }
