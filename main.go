@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+
+	"ida_diag/src/app/routes"
 	"ida_diag/src/database"
-	"ida_diag/src/module/routes"
 	"log"
 	"net/http"
 	"os"
