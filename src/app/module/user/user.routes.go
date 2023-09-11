@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -89,7 +88,7 @@ func (h *UserRoutesHandler) handleGetUserByID(w http.ResponseWriter, r *http.Req
 }
 
 func (h *UserRoutesHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
-	// Extract the user ID from the URL parameter
+	// Extract the user ID from the URL path
 	userIDStr := r.URL.Path[len("/users/"):]
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -97,26 +96,38 @@ func (h *UserRoutesHandler) handleUpdateUser(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Parse the JSON request body to get the updated user data
-	var updatedUser User
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&updatedUser); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// Call the service to update the user
-	userService := NewUserService(h.DB)
-	if err := userService.UpdateUser(userID, &updatedUser); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "User updated successfully")
+	// Call the controller to update the user
+	userController := NewUserController(NewUserService(h.DB))
+	userController.UpdateUser(w, r, userID)
 }
 
+// func (h *UserRoutesHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+// 	// Extract the user ID from the URL parameter
+// 	userIDStr := r.URL.Path[len("/users/"):]
+// 	userID, err := strconv.Atoi(userIDStr)
+// 	if err != nil {
+// 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+// 		return
+// 	}
 
+// 	// Parse the JSON request body to get the updated user data
+// 	var updatedUser User
+// 	decoder := json.NewDecoder(r.Body)
+// 	if err := decoder.Decode(&updatedUser); err != nil {
+// 		http.Error(w, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	// Call the service to update the user
+// 	userService := NewUserService(h.DB)
+// 	if err := userService.UpdateUser(userID, &updatedUser); err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	w.WriteHeader(http.StatusOK)
+// 	fmt.Fprintf(w, "User updated successfully")
+// }
 
 func (h *UserRoutesHandler) handleDeleteUserByID(w http.ResponseWriter, r *http.Request) {
 

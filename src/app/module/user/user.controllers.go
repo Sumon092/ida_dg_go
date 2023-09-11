@@ -71,16 +71,7 @@ func (c *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-func (c *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	// Extract the userID from the URL path
-	userID := r.URL.Path[len("/users/"):]
-	userIDInt, err := strconv.Atoi(userID)
-	if err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		return
-	}
-
+func (c *UserController) UpdateUser(w http.ResponseWriter, r *http.Request, userID int) {
 	// Parse the JSON request body to get the updated user data
 	var updatedUser User
 	decoder := json.NewDecoder(r.Body)
@@ -90,10 +81,10 @@ func (c *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set the ID of the updated user based on the extracted userID
-	updatedUser.ID = userIDInt
+	updatedUser.ID = userID
 
 	// Call the service to update the user
-	err = c.userService.UpdateUser(userIDInt, &updatedUser)
+	err := c.userService.UpdateUser(userID, &updatedUser)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -103,6 +94,40 @@ func (c *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(updatedUser)
 	fmt.Println("User updated successfully")
 }
+
+
+
+// func (c *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
+// 	// Extract the userID from the URL path
+// 	userID := r.URL.Path[len("/users/"):]
+// 	userIDInt, err := strconv.Atoi(userID)
+// 	if err != nil {
+// 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	// Parse the JSON request body to get the updated user data
+// 	var updatedUser User
+// 	decoder := json.NewDecoder(r.Body)
+// 	if err := decoder.Decode(&updatedUser); err != nil {
+// 		http.Error(w, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	// Set the ID of the updated user based on the extracted userID
+// 	updatedUser.ID = userIDInt
+
+// 	// Call the service to update the user
+// 	err = c.userService.UpdateUser(userIDInt, &updatedUser)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	w.WriteHeader(http.StatusOK)
+// 	json.NewEncoder(w).Encode(updatedUser)
+// 	fmt.Println("User updated successfully")
+// }
 
 
 
