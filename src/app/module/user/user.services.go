@@ -52,3 +52,20 @@ func (s *UserService) GetUser(userID int) (*User, error) {
 	}
 	return user, nil
 }
+
+func (s *UserService) UpdateUser(userID int, updatedUser *User) error {
+	_, err := s.db.Exec("UPDATE users SET name=$1, email=$2, phone_no=$3, address=$4 WHERE id=$5",
+		updatedUser.Name, updatedUser.Email, updatedUser.PhoneNo, updatedUser.Address, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) DeleteUser(userID int) error {
+	_, err := s.db.Exec("DELETE FROM users WHERE id=$1", userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
